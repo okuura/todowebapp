@@ -25,18 +25,20 @@ const AddTagPopover: React.FC<AddTagPopoverProps> = ({
 }) => {
   const popoverRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
   const availableTags = existingTags.filter(
     tag => !taskTags.some(t => t.id === tag.id)
   );
 
   useEffect(() => {
-    if (!buttonRef || !popoverRef.current) return;
+    if (!buttonRef) return;
 
     const updatePosition = () => {
+      if (!popoverRef.current) return;
+
       const buttonRect = buttonRef.getBoundingClientRect();
-      const popoverRect = popoverRef.current!.getBoundingClientRect();
+      const popoverRect = popoverRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
 
@@ -58,8 +60,16 @@ const AddTagPopover: React.FC<AddTagPopoverProps> = ({
       setPosition({ top, left });
     };
 
-    updatePosition();
-    inputRef.current?.focus();
+    const initialButtonRect = buttonRef.getBoundingClientRect();
+    setPosition({
+      top: initialButtonRect.bottom + 4,
+      left: initialButtonRect.left
+    });
+
+    requestAnimationFrame(() => {
+      updatePosition();
+      inputRef.current?.focus();
+    });
 
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -89,6 +99,8 @@ const AddTagPopover: React.FC<AddTagPopoverProps> = ({
       onClose();
     }
   };
+
+  if (!position) return null;
 
   return createPortal(
     <div
