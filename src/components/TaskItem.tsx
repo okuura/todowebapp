@@ -162,21 +162,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
       }`}
     >
       <div
-        className="flex items-center space-x-1 cursor-grab active:cursor-grabbing"
+        className="flex items-center"
         style={{ width: '40px' }}
-        {...dragHandleProps}
       >
         <input
           type="checkbox"
+          id={`task-checkbox-${task.id}`}
           checked={task.completed}
           onChange={handleToggleComplete}
           className="h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+          onClick={(e) => e.stopPropagation()}
         />
       </div>
 
       <div
-        className="flex items-center min-w-0"
+        className="flex items-center min-w-0 cursor-grab active:cursor-grabbing"
         style={{ width: `${tagColumnWidth}px` }}
+        {...dragHandleProps}
       >
         <div className="flex flex-wrap items-center gap-1">
           {task.tags.map((tag) => (
