@@ -17,6 +17,7 @@ interface TaskListProps {
   onToggleSortDirection: () => void;
   tagColumnWidth: number;
   onTagColumnResize: (e: React.MouseEvent) => void;
+  onClearSort: () => void;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -31,10 +32,15 @@ const TaskList: React.FC<TaskListProps> = ({
   sortDirection,
   onToggleSortDirection,
   tagColumnWidth,
-  onTagColumnResize
+  onTagColumnResize,
+  onClearSort
 }) => {
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
+
+    if (sortDirection !== null) {
+      onClearSort();
+    }
 
     const items = Array.from(filteredTasks);
     const [reorderedItem] = items.splice(result.source.index, 1);
