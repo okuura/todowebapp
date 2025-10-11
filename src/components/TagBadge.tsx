@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tag } from '../types';
 import { TAG_COLORS } from '../utils/taskUtils';
 import { X } from 'lucide-react';
@@ -10,15 +10,20 @@ interface TagBadgeProps {
   allowEdit?: boolean;
 }
 
-const TagBadge: React.FC<TagBadgeProps> = ({ 
-  tag, 
-  onRemove, 
+const TagBadge: React.FC<TagBadgeProps> = ({
+  tag,
+  onRemove,
   onEdit,
   allowEdit = true
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(tag.name);
   const [editedColor, setEditedColor] = useState(tag.color);
+
+  useEffect(() => {
+    setEditedName(tag.name);
+    setEditedColor(tag.color);
+  }, [tag.name, tag.color]);
 
   const handleEdit = () => {
     if (!allowEdit) return;
@@ -46,12 +51,13 @@ const TagBadge: React.FC<TagBadgeProps> = ({
     }
   };
 
-  const handleColorChange = (color: string) => {
+  const handleColorChange = (e: React.MouseEvent, color: string) => {
+    e.preventDefault();
     setEditedColor(color);
-    if (onEdit) {
+    if (onEdit && editedName.trim()) {
       onEdit({
         ...tag,
-        name: editedName,
+        name: editedName.trim(),
         color: color
       });
     }
@@ -73,7 +79,8 @@ const TagBadge: React.FC<TagBadgeProps> = ({
           {TAG_COLORS.map(color => (
             <button
               key={color}
-              onClick={() => handleColorChange(color)}
+              type="button"
+              onMouseDown={(e) => handleColorChange(e, color)}
               className={`w-3 h-3 rounded-full cursor-pointer ${
                 editedColor === color ? 'ring-1 ring-offset-1 ring-blue-500' : ''
               }`}

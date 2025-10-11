@@ -56,20 +56,45 @@ function App() {
   };
   
   const handleUpdateTask = (updatedTask: Task) => {
-    setTasks(
-      tasks.map(task => (task.id === updatedTask.id ? updatedTask : task))
-    );
+    const changedTags: Tag[] = [];
 
-    setTags(prevTags => {
-      let updatedTags = [...prevTags];
-      updatedTask.tags.forEach(updatedTag => {
-        const existingTag = updatedTags.find(t => t.id === updatedTag.id);
-        if (existingTag && (existingTag.name !== updatedTag.name || existingTag.color !== updatedTag.color)) {
-          updatedTags = updatedTags.map(t => t.id === updatedTag.id ? updatedTag : t);
-        }
-      });
-      return updatedTags;
+    updatedTask.tags.forEach(updatedTag => {
+      const existingTag = tags.find(t => t.id === updatedTag.id);
+      if (existingTag && (existingTag.name !== updatedTag.name || existingTag.color !== updatedTag.color)) {
+        changedTags.push(updatedTag);
+      }
     });
+
+    if (changedTags.length > 0) {
+      setTags(prevTags =>
+        prevTags.map(t => {
+          const changed = changedTags.find(ct => ct.id === t.id);
+          return changed || t;
+        })
+      );
+
+      setTasks(prevTasks =>
+        prevTasks.map(task => {
+          const needsUpdate = task.tags.some(tag =>
+            changedTags.some(ct => ct.id === tag.id)
+          );
+
+          if (!needsUpdate) return task;
+
+          return {
+            ...task,
+            tags: task.tags.map(tag => {
+              const changed = changedTags.find(ct => ct.id === tag.id);
+              return changed || tag;
+            })
+          };
+        })
+      );
+    } else {
+      setTasks(prevTasks =>
+        prevTasks.map(task => (task.id === updatedTask.id ? updatedTask : task))
+      );
+    }
   };
   
   const handleReorderTasks = (reorderedTasks: Task[]) => {
