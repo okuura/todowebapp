@@ -32,7 +32,6 @@ interface TaskListProps {
   onToggleSortDirection: () => void;
   tagColumnWidth: number;
   onTagColumnResize: (e: React.MouseEvent) => void;
-  onClearSort: () => void;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -47,8 +46,7 @@ const TaskList: React.FC<TaskListProps> = ({
   sortDirection,
   onToggleSortDirection,
   tagColumnWidth,
-  onTagColumnResize,
-  onClearSort
+  onTagColumnResize
 }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -69,10 +67,6 @@ const TaskList: React.FC<TaskListProps> = ({
 
     if (oldIndex === newIndex) {
       return;
-    }
-
-    if (sortDirection !== null) {
-      onClearSort();
     }
 
     const reorderedFiltered = arrayMove(filteredTasks, oldIndex, newIndex);
@@ -104,9 +98,7 @@ const TaskList: React.FC<TaskListProps> = ({
             onClick={onToggleSortDirection}
             className="ml-1 text-gray-500 hover:text-gray-700 focus:outline-none"
           >
-            {sortDirection === 'asc' ? <ArrowUp size={12} /> :
-             sortDirection === 'desc' ? <ArrowDown size={12} /> :
-             <span className="w-3 h-3"></span>}
+            {sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
           </button>
         </div>
         <div className="w-8"></div>

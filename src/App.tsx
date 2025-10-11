@@ -93,15 +93,11 @@ function App() {
   
   const handleToggleSortDirection = () => {
     setSortDirection(current => {
-      if (current === null) return 'asc';
       if (current === 'asc') return 'desc';
       return 'asc';
     });
   };
 
-  const handleClearSort = () => {
-    setSortDirection(null);
-  };
   
   const handleAddMilestone = (milestone: Milestone) => {
     setMilestones([...milestones, milestone]);
@@ -357,7 +353,6 @@ function App() {
               existingTags={tags}
               sortDirection={sortDirection}
               onToggleSortDirection={handleToggleSortDirection}
-              onClearSort={handleClearSort}
               tagColumnWidth={tagColumnWidth}
               onTagColumnResize={handleTagColumnDividerMouseDown}
             />
