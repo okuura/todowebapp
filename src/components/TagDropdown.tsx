@@ -30,6 +30,16 @@ const TagDropdown: React.FC<TagDropdownProps> = ({
   useEffect(() => {
     inputRef.current?.focus();
 
+    if (dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+
+      if (rect.right > viewportWidth) {
+        dropdownRef.current.style.left = 'auto';
+        dropdownRef.current.style.right = '0';
+      }
+    }
+
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         onClose();
