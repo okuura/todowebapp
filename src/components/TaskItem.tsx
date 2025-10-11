@@ -33,7 +33,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const [editedDeadline, setEditedDeadline] = useState(task.deadline || '');
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editedContent, setEditedContent] = useState(task.content);
-  const contentInputRef = useRef<HTMLInputElement>(null);
+  const contentInputRef = useRef<HTMLTextAreaElement>(null);
   const addTagButtonRef = useRef<HTMLButtonElement>(null);
 
   const getDeadlineStyle = () => {
@@ -147,7 +147,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   const handleContentKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleContentSave();
     } else if (e.key === 'Escape') {
       setIsEditingContent(false);
@@ -222,19 +223,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
       <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
         {isEditingContent ? (
-          <input
+          <textarea
             ref={contentInputRef}
-            type="text"
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
             onBlur={handleContentSave}
             onKeyDown={handleContentKeyDown}
-            className="w-full px-1 py-0.5 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-1 py-0.5 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none overflow-hidden"
+            rows={1}
+            style={{ minHeight: '1.5rem' }}
+            onInput={(e) => {
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = 'auto';
+              target.style.height = target.scrollHeight + 'px';
+            }}
           />
         ) : (
           <div
             onClick={handleContentClick}
-            className="cursor-pointer hover:bg-gray-50 px-1 py-0.5 text-sm rounded"
+            className="cursor-pointer hover:bg-gray-50 px-1 py-0.5 text-sm rounded whitespace-pre-wrap"
           >
             {task.content}
           </div>
