@@ -64,12 +64,16 @@ const TaskList: React.FC<TaskListProps> = ({
       return;
     }
 
+    const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
+    const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
+
+    if (oldIndex === newIndex) {
+      return;
+    }
+
     if (sortDirection !== null) {
       onClearSort();
     }
-
-    const oldIndex = filteredTasks.findIndex((task) => task.id === active.id);
-    const newIndex = filteredTasks.findIndex((task) => task.id === over.id);
 
     const reorderedFiltered = arrayMove(filteredTasks, oldIndex, newIndex);
 
