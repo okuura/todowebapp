@@ -182,16 +182,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
       >
         <div className="flex flex-wrap items-center gap-1">
           {task.tags.map((tag) => (
-            <TagBadge
-              key={tag.id}
-              tag={tag}
-              onRemove={() => handleRemoveTag(tag.id)}
-              onEdit={handleEditTag}
-            />
+            <div key={tag.id} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
+              <TagBadge
+                tag={tag}
+                onRemove={() => handleRemoveTag(tag.id)}
+                onEdit={handleEditTag}
+              />
+            </div>
           ))}
           <button
             ref={addTagButtonRef}
-            onClick={() => setShowTagPopover(!showTagPopover)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTagPopover(!showTagPopover);
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
             className="inline-flex items-center text-gray-400 hover:text-gray-600 transition-colors"
           >
             <Plus size={14} />
