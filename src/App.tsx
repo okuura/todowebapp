@@ -395,7 +395,7 @@ function App() {
               onUpdateTask={handleUpdateTask}
               onReorderTasks={handleReorderTasks}
               onAddTag={handleAddTagToTask}
-              existingTags={availableTags}
+              existingTags={tags}
               sortDirection={sortDirection}
               onToggleSortDirection={handleToggleSortDirection}
               tagColumnWidth={tagColumnWidth}
