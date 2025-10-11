@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Task, Tag } from '../types';
 import TagBadge from './TagBadge';
+import TagDropdown from './TagDropdown';
 import { X, Plus, Calendar } from 'lucide-react';
 import { TAG_COLORS } from '../utils/taskUtils';
 import { v4 as uuidv4 } from 'uuid';
@@ -26,7 +27,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
   tagColumnWidth,
   dragHandleProps
 }) => {
-  const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [isEditingDeadline, setIsEditingDeadline] = useState(false);
@@ -34,7 +34,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editedContent, setEditedContent] = useState(task.content);
   const contentInputRef = useRef<HTMLInputElement>(null);
-  const newTagInputRef = useRef<HTMLInputElement>(null);
 
   const getDeadlineStyle = () => {
     if (!task.deadline) return {};
@@ -91,7 +90,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
     }
 
     setNewTagName('');
-    setIsAddingTag(false);
     setShowTagDropdown(false);
   };
 
@@ -100,15 +98,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
       onAddTag(task.id, tag);
     }
     setShowTagDropdown(false);
-  };
-
-  const handleTagInputKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddNewTag();
-    } else if (e.key === 'Escape') {
-      setShowTagDropdown(false);
-      setNewTagName('');
-    }
   };
 
   const handleEditDeadline = () => {
@@ -184,7 +173,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         />
       </div>
 
-      <div 
+      <div
         className="flex items-center min-w-0 relative"
         style={{ width: `${tagColumnWidth}px` }}
       >
@@ -197,67 +186,28 @@ const TaskItem: React.FC<TaskItemProps> = ({
               onEdit={handleEditTag}
             />
           ))}
-          {showTagDropdown ? (
-            <div className="relative inline-block">
-              <div className="absolute z-10 bg-white border border-gray-200 rounded shadow-lg p-2 w-56">
-                {existingTags.filter(tag => !task.tags.some(t => t.id === tag.id)).length > 0 && (
-                  <div className="mb-2">
-                    <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
-                      {existingTags
-                        .filter(tag => !task.tags.some(t => t.id === tag.id))
-                        .map(tag => (
-                          <button
-                            key={tag.id}
-                            onClick={() => handleSelectExistingTag(tag)}
-                            className="inline-flex items-center rounded px-2 py-0.5 text-xs text-white hover:opacity-80 transition-opacity"
-                            style={{ backgroundColor: tag.color }}
-                          >
-                            {tag.name}
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-                )}
-                <div className={existingTags.filter(tag => !task.tags.some(t => t.id === tag.id)).length > 0 ? "border-t border-gray-200 pt-2" : ""}>
-                  <input
-                    ref={newTagInputRef}
-                    type="text"
-                    value={newTagName}
-                    onChange={(e) => setNewTagName(e.target.value)}
-                    onKeyDown={handleTagInputKeyDown}
-                    className="w-full text-xs border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none mb-1"
-                    placeholder="新規タグを作成..."
-                    autoFocus
-                  />
-                  <div className="flex justify-end gap-1">
-                    <button
-                      onClick={() => {
-                        setShowTagDropdown(false);
-                        setNewTagName('');
-                      }}
-                      className="text-xs px-2 py-1 text-gray-600 hover:text-gray-800"
-                    >
-                      キャンセル
-                    </button>
-                    <button
-                      onClick={handleAddNewTag}
-                      disabled={!newTagName.trim()}
-                      className="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    >
-                      追加
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
+          <div className="relative inline-block">
             <button
-              onClick={() => setShowTagDropdown(true)}
-              className="inline-flex items-center text-gray-400 hover:text-gray-600"
+              onClick={() => setShowTagDropdown(!showTagDropdown)}
+              className="inline-flex items-center text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Plus size={14} />
             </button>
-          )}
+            {showTagDropdown && (
+              <TagDropdown
+                existingTags={existingTags}
+                taskTags={task.tags}
+                newTagName={newTagName}
+                onNewTagNameChange={setNewTagName}
+                onSelectExistingTag={handleSelectExistingTag}
+                onAddNewTag={handleAddNewTag}
+                onClose={() => {
+                  setShowTagDropdown(false);
+                  setNewTagName('');
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
 
