@@ -28,6 +28,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 }) => {
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagName, setNewTagName] = useState('');
+  const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [isEditingDeadline, setIsEditingDeadline] = useState(false);
   const [editedDeadline, setEditedDeadline] = useState(task.deadline || '');
   const [isEditingContent, setIsEditingContent] = useState(false);
@@ -91,13 +92,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     setNewTagName('');
     setIsAddingTag(false);
+    setShowTagDropdown(false);
+  };
+
+  const handleSelectExistingTag = (tag: Tag) => {
+    if (!task.tags.some(t => t.id === tag.id)) {
+      onAddTag(task.id, tag);
+    }
+    setShowTagDropdown(false);
   };
 
   const handleTagInputKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddNewTag();
     } else if (e.key === 'Escape') {
-      setIsAddingTag(false);
+      setShowTagDropdown(false);
       setNewTagName('');
     }
   };
@@ -188,39 +197,67 @@ const TaskItem: React.FC<TaskItemProps> = ({
               onEdit={handleEditTag}
             />
           ))}
-          {isAddingTag ? (
-            <div className="inline-flex items-center bg-white border border-gray-200 rounded p-0.5 shadow-sm">
-              <input
-                ref={newTagInputRef}
-                type="text"
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                onKeyDown={handleTagInputKeyDown}
-                className="w-20 text-xs border-none focus:ring-0 outline-none px-1"
-                placeholder="新しいタグ"
-                autoFocus
-              />
-              <div className="flex space-x-1">
-                <button
-                  onClick={handleAddNewTag}
-                  className="text-xs px-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  追加
-                </button>
+          {showTagDropdown ? (
+            <div className="relative inline-block">
+              <div className="absolute z-10 bg-white border border-gray-200 rounded shadow-lg p-2 min-w-48">
+                <div className="mb-2">
+                  <div className="text-xs font-medium text-gray-700 mb-1">既存のタグ</div>
+                  <div className="max-h-32 overflow-y-auto">
+                    {existingTags
+                      .filter(tag => !task.tags.some(t => t.id === tag.id))
+                      .map(tag => (
+                        <button
+                          key={tag.id}
+                          onClick={() => handleSelectExistingTag(tag)}
+                          className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded flex items-center"
+                        >
+                          <span
+                            className="inline-block w-3 h-3 rounded-full mr-2"
+                            style={{ backgroundColor: tag.color }}
+                          />
+                          {tag.name}
+                        </button>
+                      ))}
+                    {existingTags.filter(tag => !task.tags.some(t => t.id === tag.id)).length === 0 && (
+                      <div className="text-xs text-gray-400 px-2 py-1">利用可能なタグがありません</div>
+                    )}
+                  </div>
+                </div>
+                <div className="border-t border-gray-200 pt-2">
+                  <div className="text-xs font-medium text-gray-700 mb-1">新規タグ</div>
+                  <div className="flex items-center space-x-1">
+                    <input
+                      ref={newTagInputRef}
+                      type="text"
+                      value={newTagName}
+                      onChange={(e) => setNewTagName(e.target.value)}
+                      onKeyDown={handleTagInputKeyDown}
+                      className="flex-1 text-xs border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"
+                      placeholder="タグ名"
+                      autoFocus
+                    />
+                    <button
+                      onClick={handleAddNewTag}
+                      className="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      追加
+                    </button>
+                  </div>
+                </div>
                 <button
                   onClick={() => {
-                    setIsAddingTag(false);
+                    setShowTagDropdown(false);
                     setNewTagName('');
                   }}
-                  className="text-xs px-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                  className="text-xs text-gray-500 hover:text-gray-700 mt-2 w-full text-center"
                 >
-                  キャンセル
+                  閉じる
                 </button>
               </div>
             </div>
           ) : (
             <button
-              onClick={() => setIsAddingTag(true)}
+              onClick={() => setShowTagDropdown(true)}
               className="inline-flex items-center text-gray-400 hover:text-gray-600"
             >
               <Plus size={14} />

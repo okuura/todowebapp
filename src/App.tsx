@@ -59,6 +59,13 @@ function App() {
     setTasks(
       tasks.map(task => (task.id === updatedTask.id ? updatedTask : task))
     );
+
+    updatedTask.tags.forEach(updatedTag => {
+      const existingTag = tags.find(t => t.id === updatedTag.id);
+      if (existingTag && (existingTag.name !== updatedTag.name || existingTag.color !== updatedTag.color)) {
+        setTags(tags.map(t => t.id === updatedTag.id ? updatedTag : t));
+      }
+    });
   };
   
   const handleReorderTasks = (reorderedTasks: Task[]) => {
@@ -74,12 +81,21 @@ function App() {
   };
   
   const handleAddTagToTask = (taskId: string, tag: Tag) => {
+    const existingTag = tags.find(t => t.id === tag.id);
+    if (!existingTag) {
+      setTags([...tags, tag]);
+    }
+
     setTasks(
-      tasks.map(task =>
-        task.id === taskId
-          ? { ...task, tags: [...task.tags, tag] }
-          : task
-      )
+      tasks.map(task => {
+        if (task.id === taskId) {
+          if (task.tags.some(t => t.id === tag.id)) {
+            return task;
+          }
+          return { ...task, tags: [...task.tags, tag] };
+        }
+        return task;
+      })
     );
   };
   
