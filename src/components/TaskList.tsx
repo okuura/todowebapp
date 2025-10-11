@@ -35,12 +35,19 @@ const TaskList: React.FC<TaskListProps> = ({
 }) => {
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
-    
-    const items = Array.from(tasks);
+
+    const items = Array.from(filteredTasks);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    
-    onReorderTasks(items);
+
+    const reorderedIds = items.map(task => task.id);
+
+    const updatedTasks = [...items];
+    const remainingTasks = tasks.filter(
+      task => !reorderedIds.includes(task.id)
+    );
+
+    onReorderTasks([...updatedTasks, ...remainingTasks]);
   };
 
   return (
