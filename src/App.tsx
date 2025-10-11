@@ -25,8 +25,8 @@ function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const tagColumnDividerRef = useRef<HTMLDivElement>(null);
   
-  const existingTagIds = new Set(tasks.flatMap(task => task.tags.map(tag => tag.id)));
-  const availableTags = tags.filter(tag => existingTagIds.has(tag.id));
+  const usedTagIds = new Set(tasks.flatMap(task => task.tags.map(tag => tag.id)));
+  const usedTags = tags.filter(tag => usedTagIds.has(tag.id));
   
   const filteredTasks = tasks.filter(task => {
     if (selectedTagIds.length === 0) return true;
@@ -372,10 +372,10 @@ function App() {
         
         <div className="flex items-center mb-2">
           <span className="text-sm font-medium text-gray-700 mr-2">フィルタ：</span>
-          <TagFilter 
-            tags={availableTags} 
-            selectedTagIds={selectedTagIds} 
-            onSelectTag={handleSelectTag} 
+          <TagFilter
+            tags={usedTags}
+            selectedTagIds={selectedTagIds}
+            onSelectTag={handleSelectTag}
           />
         </div>
         
@@ -395,7 +395,7 @@ function App() {
               onUpdateTask={handleUpdateTask}
               onReorderTasks={handleReorderTasks}
               onAddTag={handleAddTagToTask}
-              existingTags={availableTags}
+              existingTags={tags}
               sortDirection={sortDirection}
               onToggleSortDirection={handleToggleSortDirection}
               tagColumnWidth={tagColumnWidth}
