@@ -58,10 +58,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onToggleComplete(task.id);
   };
 
-  const handleTogglePriority = () => {
-    onUpdateTask({ ...task, priority: !task.priority });
-  };
-
   const handleRemoveTag = (tagId: string) => {
     const updatedTags = task.tags.filter(tag => tag.id !== tagId);
     onUpdateTask({ ...task, tags: updatedTags });
@@ -162,7 +158,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   return (
     <div
       className={`flex items-center py-1 px-2 border-b ${
-        task.completed ? 'bg-gray-200' : task.priority ? 'bg-red-50' : 'bg-white'
+        task.completed ? 'bg-gray-200' : 'bg-white'
       }`}
     >
       <div
@@ -183,19 +179,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
           checked={task.completed}
           onChange={handleToggleComplete}
           className="h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
-        />
-      </div>
-
-      <div
-        className="flex items-center"
-        style={{ width: '32px' }}
-      >
-        <input
-          type="checkbox"
-          id={`task-priority-${task.id}`}
-          checked={task.priority}
-          onChange={handleTogglePriority}
-          className="h-4 w-4 text-red-500 rounded border-gray-300 focus:ring-red-500 cursor-pointer"
         />
       </div>
 

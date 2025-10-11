@@ -63,7 +63,6 @@ export const createTask = (input: string, existingTags: Tag[]): Task => {
     id: uuidv4(),
     content,
     completed: false,
-    priority: false,
     tags,
     deadline
   };

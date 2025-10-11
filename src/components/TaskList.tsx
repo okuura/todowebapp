@@ -82,7 +82,6 @@ const TaskList: React.FC<TaskListProps> = ({
       <div className="flex items-center py-1.5 px-2 bg-gray-50 border-b text-xs font-medium text-gray-700">
         <div style={{ width: '24px' }}></div>
         <div style={{ width: '32px' }}>済</div>
-        <div style={{ width: '32px' }}>優先</div>
         <div
           style={{ width: `${tagColumnWidth}px` }}
           className="flex items-center relative"

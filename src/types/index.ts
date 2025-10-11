@@ -8,7 +8,6 @@ export interface Task {
   id: string;
   content: string;
   completed: boolean;
-  priority: boolean;
   tags: Tag[];
   deadline?: string; // YYYY/MM/DD format
 }
