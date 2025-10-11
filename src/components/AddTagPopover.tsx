@@ -1,7 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Tag } from '../types';
 
-interface TagDropdownProps {
+interface AddTagPopoverProps {
+  buttonRef: HTMLButtonElement | null;
   existingTags: Tag[];
   taskTags: Tag[];
   newTagName: string;
@@ -11,7 +13,8 @@ interface TagDropdownProps {
   onClose: () => void;
 }
 
-const TagDropdown: React.FC<TagDropdownProps> = ({
+const AddTagPopover: React.FC<AddTagPopoverProps> = ({
+  buttonRef,
   existingTags,
   taskTags,
   newTagName,
@@ -20,35 +23,62 @@ const TagDropdown: React.FC<TagDropdownProps> = ({
   onAddNewTag,
   onClose,
 }) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const availableTags = existingTags.filter(
     tag => !taskTags.some(t => t.id === tag.id)
   );
 
   useEffect(() => {
+    if (!buttonRef || !popoverRef.current) return;
+
+    const updatePosition = () => {
+      const buttonRect = buttonRef.getBoundingClientRect();
+      const popoverRect = popoverRef.current!.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let top = buttonRect.bottom + 4;
+      let left = buttonRect.left;
+
+      if (left + popoverRect.width > viewportWidth - 8) {
+        left = viewportWidth - popoverRect.width - 8;
+      }
+
+      if (left < 8) {
+        left = 8;
+      }
+
+      if (top + popoverRect.height > viewportHeight - 8) {
+        top = buttonRect.top - popoverRect.height - 4;
+      }
+
+      setPosition({ top, left });
+    };
+
+    updatePosition();
     inputRef.current?.focus();
 
-    if (dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-
-      if (rect.right > viewportWidth) {
-        dropdownRef.current.style.left = 'auto';
-        dropdownRef.current.style.right = '0';
-      }
-    }
-
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(event.target as Node) &&
+        !buttonRef.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [buttonRef, onClose]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -60,10 +90,14 @@ const TagDropdown: React.FC<TagDropdownProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div
-      ref={dropdownRef}
-      className="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-300 rounded-lg shadow-xl p-3 w-64"
+      ref={popoverRef}
+      className="fixed z-[9999] bg-white border border-gray-300 rounded-lg shadow-xl p-3 w-64"
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+      }}
     >
       {availableTags.length > 0 && (
         <div className="mb-3">
@@ -110,8 +144,9 @@ const TagDropdown: React.FC<TagDropdownProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
-export default TagDropdown;
+export default AddTagPopover;

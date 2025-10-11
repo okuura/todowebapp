@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Task, Tag } from '../types';
 import TagBadge from './TagBadge';
-import TagDropdown from './TagDropdown';
+import AddTagPopover from './AddTagPopover';
 import { X, Plus, Calendar } from 'lucide-react';
 import { TAG_COLORS } from '../utils/taskUtils';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,12 +28,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
   dragHandleProps
 }) => {
   const [newTagName, setNewTagName] = useState('');
-  const [showTagDropdown, setShowTagDropdown] = useState(false);
+  const [showTagPopover, setShowTagPopover] = useState(false);
   const [isEditingDeadline, setIsEditingDeadline] = useState(false);
   const [editedDeadline, setEditedDeadline] = useState(task.deadline || '');
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editedContent, setEditedContent] = useState(task.content);
   const contentInputRef = useRef<HTMLInputElement>(null);
+  const addTagButtonRef = useRef<HTMLButtonElement>(null);
 
   const getDeadlineStyle = () => {
     if (!task.deadline) return {};
@@ -90,14 +91,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     }
 
     setNewTagName('');
-    setShowTagDropdown(false);
+    setShowTagPopover(false);
   };
 
   const handleSelectExistingTag = (tag: Tag) => {
     if (!task.tags.some(t => t.id === tag.id)) {
       onAddTag(task.id, tag);
     }
-    setShowTagDropdown(false);
+    setShowTagPopover(false);
   };
 
   const handleEditDeadline = () => {
@@ -174,7 +175,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       </div>
 
       <div
-        className="flex items-center min-w-0 relative"
+        className="flex items-center min-w-0"
         style={{ width: `${tagColumnWidth}px` }}
       >
         <div className="flex flex-wrap items-center gap-1">
@@ -186,30 +187,30 @@ const TaskItem: React.FC<TaskItemProps> = ({
               onEdit={handleEditTag}
             />
           ))}
-          <div className="relative inline-block">
-            <button
-              onClick={() => setShowTagDropdown(!showTagDropdown)}
-              className="inline-flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <Plus size={14} />
-            </button>
-            {showTagDropdown && (
-              <TagDropdown
-                existingTags={existingTags}
-                taskTags={task.tags}
-                newTagName={newTagName}
-                onNewTagNameChange={setNewTagName}
-                onSelectExistingTag={handleSelectExistingTag}
-                onAddNewTag={handleAddNewTag}
-                onClose={() => {
-                  setShowTagDropdown(false);
-                  setNewTagName('');
-                }}
-              />
-            )}
-          </div>
+          <button
+            ref={addTagButtonRef}
+            onClick={() => setShowTagPopover(!showTagPopover)}
+            className="inline-flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <Plus size={14} />
+          </button>
         </div>
       </div>
+      {showTagPopover && (
+        <AddTagPopover
+          buttonRef={addTagButtonRef.current}
+          existingTags={existingTags}
+          taskTags={task.tags}
+          newTagName={newTagName}
+          onNewTagNameChange={setNewTagName}
+          onSelectExistingTag={handleSelectExistingTag}
+          onAddNewTag={handleAddNewTag}
+          onClose={() => {
+            setShowTagPopover(false);
+            setNewTagName('');
+          }}
+        />
+      )}
 
       <div className={`flex-1 ${task.completed ? 'line-through text-gray-500' : ''}`}>
         {isEditingContent ? (
