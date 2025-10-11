@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Task, Tag } from '../types';
 import TagBadge from './TagBadge';
 import AddTagPopover from './AddTagPopover';
-import { X, Plus, Calendar } from 'lucide-react';
+import { X, Plus, Calendar, GripVertical } from 'lucide-react';
 import { TAG_COLORS } from '../utils/taskUtils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -162,8 +162,16 @@ const TaskItem: React.FC<TaskItemProps> = ({
       }`}
     >
       <div
+        className="flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+        style={{ width: '24px' }}
+        {...dragHandleProps}
+      >
+        <GripVertical size={16} />
+      </div>
+
+      <div
         className="flex items-center"
-        style={{ width: '40px' }}
+        style={{ width: '32px' }}
       >
         <input
           type="checkbox"
@@ -171,32 +179,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
           checked={task.completed}
           onChange={handleToggleComplete}
           className="h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
-          onClick={(e) => e.stopPropagation()}
         />
       </div>
 
       <div
-        className="flex items-center min-w-0 cursor-grab active:cursor-grabbing"
+        className="flex items-center min-w-0"
         style={{ width: `${tagColumnWidth}px` }}
-        {...dragHandleProps}
       >
         <div className="flex flex-wrap items-center gap-1">
           {task.tags.map((tag) => (
-            <div key={tag.id} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
-              <TagBadge
-                tag={tag}
-                onRemove={() => handleRemoveTag(tag.id)}
-                onEdit={handleEditTag}
-              />
-            </div>
+            <TagBadge
+              key={tag.id}
+              tag={tag}
+              onRemove={() => handleRemoveTag(tag.id)}
+              onEdit={handleEditTag}
+            />
           ))}
           <button
             ref={addTagButtonRef}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowTagPopover(!showTagPopover);
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
+            onClick={() => setShowTagPopover(!showTagPopover)}
             className="inline-flex items-center text-gray-400 hover:text-gray-600 transition-colors"
           >
             <Plus size={14} />
