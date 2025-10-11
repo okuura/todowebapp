@@ -60,6 +60,7 @@ const TagBadge: React.FC<TagBadgeProps> = ({
         name: editedName.trim(),
         color: color
       });
+      setIsEditing(false);
     }
   };
 
