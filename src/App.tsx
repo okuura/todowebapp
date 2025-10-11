@@ -25,8 +25,12 @@ function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const tagColumnDividerRef = useRef<HTMLDivElement>(null);
   
-  const usedTagIds = new Set(tasks.flatMap(task => task.tags.map(tag => tag.id)));
-  const usedTags = tags.filter(tag => usedTagIds.has(tag.id));
+  const allTaskTags = tasks.flatMap(task => task.tags);
+  const uniqueTaskTagsMap = new Map<string, Tag>();
+  allTaskTags.forEach(tag => {
+    uniqueTaskTagsMap.set(tag.id, tag);
+  });
+  const availableTaskTags = Array.from(uniqueTaskTagsMap.values());
   
   const filteredTasks = tasks.filter(task => {
     if (selectedTagIds.length === 0) return true;
@@ -373,7 +377,7 @@ function App() {
         <div className="flex items-center mb-2">
           <span className="text-sm font-medium text-gray-700 mr-2">フィルタ：</span>
           <TagFilter
-            tags={usedTags}
+            tags={availableTaskTags}
             selectedTagIds={selectedTagIds}
             onSelectTag={handleSelectTag}
           />
@@ -395,7 +399,7 @@ function App() {
               onUpdateTask={handleUpdateTask}
               onReorderTasks={handleReorderTasks}
               onAddTag={handleAddTagToTask}
-              existingTags={tags}
+              existingTags={availableTaskTags}
               sortDirection={sortDirection}
               onToggleSortDirection={handleToggleSortDirection}
               tagColumnWidth={tagColumnWidth}
