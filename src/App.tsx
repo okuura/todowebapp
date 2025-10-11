@@ -98,10 +98,6 @@ function App() {
       return 'asc';
     });
   };
-
-  const handleClearSort = () => {
-    setSortDirection(null);
-  };
   
   const handleAddMilestone = (milestone: Milestone) => {
     setMilestones([...milestones, milestone]);
@@ -346,7 +342,7 @@ function App() {
             className="overflow-hidden"
             style={{ width: `${splitPosition}%` }}
           >
-            <TaskList
+            <TaskList 
               tasks={tasks}
               filteredTasks={sortedTasks}
               onToggleComplete={handleToggleComplete}
@@ -357,7 +353,6 @@ function App() {
               existingTags={tags}
               sortDirection={sortDirection}
               onToggleSortDirection={handleToggleSortDirection}
-              onClearSort={handleClearSort}
               tagColumnWidth={tagColumnWidth}
               onTagColumnResize={handleTagColumnDividerMouseDown}
             />
