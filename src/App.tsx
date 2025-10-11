@@ -60,11 +60,15 @@ function App() {
       tasks.map(task => (task.id === updatedTask.id ? updatedTask : task))
     );
 
-    updatedTask.tags.forEach(updatedTag => {
-      const existingTag = tags.find(t => t.id === updatedTag.id);
-      if (existingTag && (existingTag.name !== updatedTag.name || existingTag.color !== updatedTag.color)) {
-        setTags(tags.map(t => t.id === updatedTag.id ? updatedTag : t));
-      }
+    setTags(prevTags => {
+      let updatedTags = [...prevTags];
+      updatedTask.tags.forEach(updatedTag => {
+        const existingTag = updatedTags.find(t => t.id === updatedTag.id);
+        if (existingTag && (existingTag.name !== updatedTag.name || existingTag.color !== updatedTag.color)) {
+          updatedTags = updatedTags.map(t => t.id === updatedTag.id ? updatedTag : t);
+        }
+      });
+      return updatedTags;
     });
   };
   
