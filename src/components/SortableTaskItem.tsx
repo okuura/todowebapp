@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import TaskItem from './TaskItem';
 import { Task, Tag } from '../types';
+import TaskItem from './TaskItem';
 
 interface SortableTaskItemProps {
   task: Task;
@@ -31,8 +31,8 @@ const SortableTaskItem: React.FC<SortableTaskItemProps> = (props) => {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskItem {...props} />
+    <div ref={setNodeRef} style={style}>
+      <TaskItem {...props} dragHandleProps={{ ...attributes, ...listeners }} />
     </div>
   );
 };

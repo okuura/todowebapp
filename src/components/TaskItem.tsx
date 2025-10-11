@@ -13,6 +13,7 @@ interface TaskItemProps {
   onAddTag: (taskId: string, tag: Tag) => void;
   existingTags: Tag[];
   tagColumnWidth: number;
+  dragHandleProps?: any;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -22,7 +23,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onUpdateTask,
   onAddTag,
   existingTags,
-  tagColumnWidth
+  tagColumnWidth,
+  dragHandleProps
 }) => {
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagName, setNewTagName] = useState('');
@@ -155,12 +157,16 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={`flex items-center py-1 px-2 border-b ${
         task.completed ? 'bg-gray-200' : 'bg-white'
       }`}
     >
-      <div className="flex items-center space-x-1" style={{ width: '40px' }}>
+      <div
+        className="flex items-center space-x-1 cursor-grab active:cursor-grabbing"
+        style={{ width: '40px' }}
+        {...dragHandleProps}
+      >
         <input
           type="checkbox"
           checked={task.completed}
