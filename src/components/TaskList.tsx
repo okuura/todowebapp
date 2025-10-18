@@ -114,7 +114,7 @@ const TaskList: React.FC<TaskListProps> = ({
           items={filteredTasks.map(task => task.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="bg-white">
+          <div className="bg-white overflow-y-auto" style={{ maxHeight: 'calc(100vh - 14rem)' }}>
             {filteredTasks.length === 0 ? (
               <div className="p-4 text-center text-gray-500 text-sm">
                 タスクがありません

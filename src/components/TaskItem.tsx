@@ -121,7 +121,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
   };
 
   const handleDeadlineKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 't' || e.key === 'T') {
+      e.preventDefault();
+      const today = new Date();
+      const formatted = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+      setEditedDeadline(formatted);
+      onUpdateTask({ ...task, deadline: formatted });
+      setIsEditingDeadline(false);
+    } else if (e.key === 'Enter') {
       handleSaveDeadline();
     } else if (e.key === 'Escape') {
       setIsEditingDeadline(false);
